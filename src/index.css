@@ -1,0 +1,268 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+
+.portfolio-full-root {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border-inline: 0 !important;
+}
+
+.portfolio-shell {
+  overflow-x: hidden;
+}
+
+.portfolio-hero-title {
+  font-size: clamp(42px, 8vw, 72px);
+  letter-spacing: 0;
+}
+
+.portfolio-hero-name {
+  font-size: clamp(24px, 4vw, 36px);
+}
+
+.portfolio-about-card,
+.portfolio-contact-card {
+  overflow-wrap: anywhere;
+}
+
+.portfolio-nav-menu {
+  top: 16px;
+  right: max(64px, calc((100vw - 56rem) / 2 + 64px));
+  transform-origin: right center;
+  animation: portfolioNavSlide 180ms ease-out;
+  max-width: calc(100vw - 48px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.portfolio-nav-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.portfolio-nav-links {
+  width: max-content;
+}
+
+.portfolio-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.portfolio-photo-item {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid rgba(88, 28, 135, 0.45);
+  border-radius: 8px;
+  background: #111827;
+}
+
+.portfolio-photo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portfolio-coming-soon {
+  font-size: 24px;
+  text-align: center;
+}
+
+.portfolio-coming-soon span::after {
+  content: '';
+  animation: portfolioDots 1.2s steps(4, end) infinite;
+}
+
+@media (max-width: 720px) {
+  .portfolio-hero {
+    min-height: 100svh;
+    height: auto;
+    padding-block: 120px 80px;
+  }
+
+  .portfolio-nav-menu {
+    top: 64px;
+    left: 24px;
+    right: 24px;
+    padding-inline: 20px;
+    transform-origin: top right;
+  }
+
+  .portfolio-nav-links {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 12px;
+    white-space: normal;
+  }
+
+  .portfolio-photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .portfolio-nav .max-w-4xl {
+    padding-inline: 18px;
+  }
+
+  .portfolio-photo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-photo-item {
+    aspect-ratio: 3 / 4;
+  }
+
+  .portfolio-about-card,
+  .portfolio-contact-card {
+    padding: 18px;
+  }
+}
+
+@keyframes portfolioNavSlide {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 0 100%);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes portfolioDots {
+  0% {
+    content: '';
+  }
+
+  25% {
+    content: '.';
+  }
+
+  50% {
+    content: '..';
+  }
+
+  75%,
+  100% {
+    content: '...';
+  }
+}
