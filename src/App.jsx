@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ExternalLink } from 'lucide-react';
 import photoLamp from './assets/photo-lamp.webp';
 import photoFire from './assets/photo-fire.webp';
 import photoDurga from './assets/photo-durga.webp';
@@ -36,6 +36,8 @@ export default function Portfolio() {
       title: 'MUN Website',
       description: "The SMSD MUN website is the official online platform for St. Michael's School, Durgapur Model United Nations conference. It helps visitors explore the event, committees, delegates, chairpersons, awards, gallery, and conference updates in one place, while showcasing the school's MUN journey, leadership team, and key milestones for students, parents, and the wider community.",
       tech: 'HTML, CSS, Static',
+      status: 'Completed',
+      link: 'https://smsd-mun.vercel.app/',
       learned: 'Designed by me, made with Claude and Codex',
     },
     {
@@ -262,8 +264,20 @@ export default function Portfolio() {
               className={`transition-all duration-1000 ${visibleSections[`project-${idx}`] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             >
               <div className="bg-purple-900/20 border border-purple-900/40 rounded-lg p-8 hover:border-purple-500/50 transition">
-                <h3 className="text-xl font-semibold text-purple-300 mb-2">
-                  {cleanText(project.title)}
+                <h3 className="text-xl font-semibold text-purple-300 mb-2 flex items-center gap-2">
+                  {project.link ? (
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-purple-200 inline-flex items-center gap-1.5 transition-colors"
+                    >
+                      {cleanText(project.title)}
+                      <ExternalLink size={16} className="text-purple-400" />
+                    </a>
+                  ) : (
+                    cleanText(project.title)
+                  )}
                 </h3>
                 <p className="text-gray-400 mb-4">
                   {cleanText(project.description)}
@@ -272,6 +286,11 @@ export default function Portfolio() {
                   <span className="text-xs bg-purple-900/50 border border-purple-700/50 rounded px-3 py-1 text-purple-200">
                     {cleanText(project.tech)}
                   </span>
+                  {project.status && (
+                    <span className="text-xs bg-green-950/60 border border-green-500/40 rounded px-3 py-1 text-green-300 font-medium">
+                      {cleanText(project.status)}
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm text-gray-500">
                   <span className="text-gray-400">Learned:</span> {cleanText(project.learned)}
