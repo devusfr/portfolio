@@ -412,8 +412,8 @@ export default function Portfolio() {
                 onClick={() => setActiveTab(category)}
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-full border transition-all duration-300 font-medium text-sm capitalize ${
                   activeTab === category
-                    ? 'bg-purple-900/40 border-purple-500/80 text-purple-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]'
-                    : 'bg-black/20 border-purple-900/30 text-gray-400 hover:text-purple-300 hover:border-purple-500/30'
+                    ? 'bg-purple-900/60 border-purple-400 text-white shadow-[0_0_20px_rgba(139,92,246,0.35)] scale-105'
+                    : 'bg-purple-950/20 border-purple-900/50 text-gray-300 hover:text-white hover:border-purple-500/50 hover:bg-purple-900/20'
                 }`}
               >
                 {skillCategories[category].icon}
