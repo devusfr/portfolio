@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ExternalLink } from 'lucide-react';
+import { ChevronDown, ExternalLink, X, ChevronLeft, ChevronRight, Code, Camera, Sparkles } from 'lucide-react';
 import photoLamp from './assets/photo-lamp.webp';
 import photoFire from './assets/photo-fire.webp';
 import photoDurga from './assets/photo-durga.webp';
@@ -8,7 +8,10 @@ import photoBeach from './assets/photo-beach.jpg';
 import photoFireworks from './assets/photo-fireworks.jpg';
 import photoMoon from './assets/photo-moon.jpg';
 export default function Portfolio() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+  const [activeTab, setActiveTab] = useState('technical');
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const [flippedCards, setFlippedCards] = useState({});
   const [visibleSections, setVisibleSections] = useState({});
   const [stars] = useState(() => [...Array(100)].map((_, i) => ({
@@ -64,6 +67,34 @@ export default function Portfolio() {
     { id: 7, url: photoMoon, title: 'Lunar eclipse' },
   ];
 
+  const skillCategories = {
+    technical: {
+      icon: <Code size={18} />,
+      skills: [
+        { name: 'C++', details: 'Robotics control systems, Arduino programming (IRC 2024 semi-finalist).' },
+        { name: 'Python', details: 'Desktop software, PyQt6 GUI frameworks, club management system.' },
+        { name: 'HTML & CSS', details: 'Static web design, responsive layouts (built SMSD MUN website).' },
+        { name: 'Arduino', details: 'Hardware integration, sensor interfacing, custom mechanics control.' },
+      ]
+    },
+    creative: {
+      icon: <Camera size={18} />,
+      skills: [
+        { name: 'Photography', details: 'Featured in 11th 35Awards, student photographer for MUN media.' },
+        { name: 'Visual Direction', details: 'Design planning, layout structures, and aesthetic design systems.' },
+        { name: 'Cinematography', details: 'Video capture, editing flow, and media storytelling.' },
+      ]
+    },
+    leadership: {
+      icon: <Sparkles size={18} />,
+      skills: [
+        { name: 'Event Management', details: 'Organized and managed student conferences, MUN events.' },
+        { name: 'Media Operations', details: 'Media Committee Chairperson at SMSD MUN 2025.' },
+        { name: 'Financial Tracking', details: 'Interact Club Treasurer (2025-26), handled badge finances.' },
+      ]
+    }
+  };
+
   const cleanText = (value) => value
     .replace(/\u00e2\u20ac\u201d/g, '-')
     .replace(/\u00c2\u00a9/g, '(c)');
@@ -78,7 +109,8 @@ export default function Portfolio() {
     const root = document.getElementById('root');
     root?.classList.add('portfolio-full-root');
 
-    const observer = new IntersectionObserver((entries) => {
+    // Section entrance animation observer
+    const animObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           setVisibleSections(prev => ({
@@ -90,19 +122,67 @@ export default function Portfolio() {
     }, { threshold: 0.1 });
 
     document.querySelectorAll('[data-animate]').forEach(el => {
-      observer.observe(el);
+      animObserver.observe(el);
     });
 
+    // Active navigation highlight observer
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, { threshold: 0.2, rootMargin: '-20% 0px -60% 0px' });
+
+    const sections = ['about', 'achievements', 'projects', 'gallery', 'skills', 'contact'];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) sectionObserver.observe(el);
+    });
+
+    // Scroll state handler
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    // Mouse move parallax for stars
+    const handleMouseMove = (e) => {
+      const { clientX, clientY } = e;
+      const x = (clientX - window.innerWidth / 2) / 55;
+      const y = (clientY - window.innerHeight / 2) / 55;
+      const starContainer = document.getElementById('star-field');
+      if (starContainer) {
+        starContainer.style.transform = `translate3d(${-x}px, ${-y}px, 0)`;
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
     return () => {
-      observer.disconnect();
+      animObserver.disconnect();
+      sectionObserver.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
       root?.classList.remove('portfolio-full-root');
     };
   }, []);
 
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setLightboxIndex(null);
+      if (e.key === 'ArrowRight') setLightboxIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+      if (e.key === 'ArrowLeft') setLightboxIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxIndex]);
+
   return (
     <div className="portfolio-shell bg-black text-white min-h-screen font-sans relative">
       {/* Stars Background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div id="star-field" className="fixed inset-0 pointer-events-none z-0 transition-transform duration-500 ease-out">
         {stars.map((star) => (
           <div
             key={star.id}
@@ -112,34 +192,29 @@ export default function Portfolio() {
         ))}
       </div>
 
-      {/* Navigation */}
-      <nav className="portfolio-nav fixed top-0 w-full z-50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="ml-auto text-purple-400 hover:text-purple-300 transition"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
+      {/* Floating Glassmorphic Navigation Bar */}
+      <nav className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300 w-[calc(100%-2rem)] max-w-2xl px-6 rounded-full border border-purple-500/10 bg-black/40 backdrop-blur-md shadow-[0_8px_32px_0_rgba(139,92,246,0.08)] flex justify-between items-center ${
+        scrolled ? 'top-3 py-2.5 max-w-xl border-purple-500/20 bg-black/60 shadow-[0_8px_32px_0_rgba(139,92,246,0.15)]' : 'top-6 py-4'
+      }`}>
+        <a href="#top" className="text-purple-400 font-semibold hover:text-purple-300 transition-colors text-sm tracking-wide">
+          Devansh
+        </a>
+        <div className="flex gap-4 md:gap-6 text-xs md:text-sm text-gray-300 font-medium">
+          {['about', 'achievements', 'projects', 'gallery', 'skills', 'contact'].map((section) => (
+            <a
+              key={section}
+              href={`#${section}`}
+              className={`capitalize transition-colors relative py-1 hover:text-purple-400 ${
+                activeSection === section ? 'text-purple-300 font-bold' : ''
+              }`}
+            >
+              {section === 'gallery' ? 'photography' : section}
+              {activeSection === section && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-purple-300 rounded-full animate-fade-in" />
+              )}
+            </a>
+          ))}
         </div>
-
-        {/* Sliding Menu */}
-        {menuOpen && (
-          <div className="portfolio-nav-menu absolute bg-black/95 backdrop-blur-md border-2 border-purple-500/50 rounded-3xl px-8 py-4 z-50">
-            <div className="portfolio-nav-links flex flex-row gap-6 text-sm text-gray-300 whitespace-nowrap">
-              <a href="#about" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">About</a>
-              <a href="#achievements" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Achievements</a>
-              <a href="#projects" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Projects</a>
-              <a href="#gallery" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Gallery</a>
-              <a href="#skills" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Skills</a>
-              <a href="#contact" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Contact</a>
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* Hero Section */}
@@ -263,37 +338,39 @@ export default function Portfolio() {
               data-animate
               className={`transition-all duration-1000 ${visibleSections[`project-${idx}`] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             >
-              <div className="bg-purple-900/20 border border-purple-900/40 rounded-lg p-8 hover:border-purple-500/50 transition">
-                <h3 className="text-xl font-semibold text-purple-300 mb-2 flex items-center gap-2">
-                  {project.link ? (
+              <div className="bg-purple-900/10 border border-purple-900/30 rounded-xl p-8 hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.15)] group relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-all duration-300"></div>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-semibold text-purple-300 group-hover:text-purple-200 transition-colors">
+                    {cleanText(project.title)}
+                  </h3>
+                  {project.link && (
                     <a
                       href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-purple-200 inline-flex items-center gap-1.5 transition-colors"
+                      className="text-purple-400 hover:text-purple-300 transition-colors p-1"
+                      title="Live Site"
                     >
-                      {cleanText(project.title)}
-                      <ExternalLink size={16} className="text-purple-400" />
+                      <ExternalLink size={20} />
                     </a>
-                  ) : (
-                    cleanText(project.title)
                   )}
-                </h3>
-                <p className="text-gray-400 mb-4">
+                </div>
+                <p className="text-gray-400 mb-4 leading-relaxed">
                   {cleanText(project.description)}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="text-xs bg-purple-900/50 border border-purple-700/50 rounded px-3 py-1 text-purple-200">
+                  <span className="text-xs bg-purple-950/60 border border-purple-800/40 rounded-full px-3.5 py-1 text-purple-200 font-medium">
                     {cleanText(project.tech)}
                   </span>
                   {project.status && (
-                    <span className="text-xs bg-green-950/60 border border-green-500/40 rounded px-3 py-1 text-green-300 font-medium">
+                    <span className="text-xs bg-green-950/60 border border-green-800/40 rounded-full px-3.5 py-1 text-green-300 font-medium">
                       {cleanText(project.status)}
                     </span>
                   )}
                 </div>
                 <p className="text-sm text-gray-500">
-                  <span className="text-gray-400">Learned:</span> {cleanText(project.learned)}
+                  <span className="text-gray-400 font-medium">Learned:</span> {cleanText(project.learned)}
                 </p>
               </div>
             </div>
@@ -306,13 +383,20 @@ export default function Portfolio() {
         <h2 className="text-3xl font-semibold mb-12 text-white">Photography</h2>
         <div id="gallery-content" data-animate className={`transition-all duration-1000 ${visibleSections['gallery-content'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="portfolio-photo-grid">
-            {photos.map((photo) => (
-              <figure key={photo.id} className="portfolio-photo-item">
+            {photos.map((photo, idx) => (
+              <figure 
+                key={photo.id} 
+                className="portfolio-photo-item cursor-pointer group relative overflow-hidden rounded-xl border border-purple-900/40 hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.03]"
+                onClick={() => setLightboxIndex(idx)}
+              >
                 <img
                   src={photo.url}
                   alt={photo.title}
-                  className="portfolio-photo-image"
+                  className="portfolio-photo-image transition-transform duration-500 group-hover:scale-110"
                 />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  <p className="text-xs text-purple-200 font-medium">{photo.title}</p>
+                </div>
               </figure>
             ))}
           </div>
@@ -323,9 +407,42 @@ export default function Portfolio() {
       <section id="skills" className="max-w-4xl mx-auto px-6 py-20 border-t border-purple-900/20 relative z-10">
         <h2 className="text-3xl font-semibold mb-12 text-white">Skills</h2>
         <div id="skills-content" data-animate className={`transition-all duration-1000 ${visibleSections['skills-content'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <p className="portfolio-coming-soon text-purple-300 font-semibold">
-            Coming soon<span></span>
-          </p>
+          {/* Tabs */}
+          <div className="flex justify-center gap-4 mb-8">
+            {Object.keys(skillCategories).map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveTab(category)}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-full border transition-all duration-300 font-medium text-sm capitalize ${
+                  activeTab === category
+                    ? 'bg-purple-900/40 border-purple-500/80 text-purple-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]'
+                    : 'bg-black/20 border-purple-900/30 text-gray-400 hover:text-purple-300 hover:border-purple-500/30'
+                }`}
+              >
+                {skillCategories[category].icon}
+                {category}
+              </button>
+            ))}
+          </div>
+
+          {/* Skills Grid */}
+          <div className="grid md:grid-cols-2 gap-6 min-h-[220px]">
+            {skillCategories[activeTab].skills.map((skill, idx) => (
+              <div 
+                key={idx}
+                className="bg-purple-900/10 border border-purple-900/30 rounded-xl p-6 hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(139,92,246,0.05)] relative overflow-hidden group"
+              >
+                <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-all duration-300"></div>
+                <h4 className="text-lg font-semibold text-purple-300 mb-2 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                  {skill.name}
+                </h4>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  {skill.details}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -379,10 +496,55 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* Footer */}
-      <section className="border-t border-purple-900/20 py-8 text-center text-gray-500 text-sm">
-        <p>© 2024 Devansh Dey. Built with React, Tailwind & Codex.</p>
-      </section>
+      {/* Fullscreen Photography Lightbox */}
+      {lightboxIndex !== null && (
+        <div 
+          className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center backdrop-blur-sm animate-fade-in"
+          onClick={() => setLightboxIndex(null)}
+        >
+          {/* Close Button */}
+          <button 
+            className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors p-2 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20"
+            onClick={() => setLightboxIndex(null)}
+          >
+            <X size={28} />
+          </button>
+
+          {/* Left Arrow */}
+          <button 
+            className="absolute left-6 text-gray-400 hover:text-white transition-colors p-2.5 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+            }}
+          >
+            <ChevronLeft size={28} />
+          </button>
+
+          {/* Image Container */}
+          <div className="max-w-[85vw] max-h-[80vh] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={photos[lightboxIndex].url} 
+              alt={photos[lightboxIndex].title} 
+              className="max-w-full max-h-[72vh] object-contain rounded-lg border border-purple-500/20 shadow-[0_0_50px_rgba(139,92,246,0.15)]"
+            />
+            <p className="text-gray-300 mt-4 text-sm font-medium tracking-wide">
+              {photos[lightboxIndex].title}
+            </p>
+          </div>
+
+          {/* Right Arrow */}
+          <button 
+            className="absolute right-6 text-gray-400 hover:text-white transition-colors p-2.5 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+            }}
+          >
+            <ChevronRight size={28} />
+          </button>
+        </div>
+      )}
 
       <style>{`
         @keyframes fadeIn {
