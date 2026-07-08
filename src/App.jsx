@@ -51,9 +51,9 @@ export default function Portfolio() {
     },
     {
       title: 'Robotics — IRC 2024',
-      description: 'Built robot for CISCE Inter-school Championship. Designed arm mechanism, programmed control system.',
-      tech: 'Arduino, Mechanics, C++',
-      learned: 'Robotics design, problem-solving under constraints, teamwork',
+      description: 'Designed physical arm mechanisms and configured control systems for the CISCE Inter-school Championship.',
+      tech: 'Arduino, Hardware, Robotics',
+      learned: 'Hardware constraints, team leadership, system integration',
     },
   ];
 
@@ -71,26 +71,26 @@ export default function Portfolio() {
     technical: {
       icon: <Code size={18} />,
       skills: [
-        { name: 'C++', details: 'Robotics control systems, Arduino programming (IRC 2024 semi-finalist).' },
-        { name: 'Python', details: 'Desktop software, PyQt6 GUI frameworks, club management system.' },
-        { name: 'HTML & CSS', details: 'Static web design, responsive layouts (built SMSD MUN website).' },
-        { name: 'Arduino', details: 'Hardware integration, sensor interfacing, custom mechanics control.' },
+        { name: 'AI Prompt Engineering', details: 'Directing LLMs (Claude, Codex) to build full-stack web and desktop applications.' },
+        { name: 'Product Prototyping', details: 'Designing system structures, UI layouts, and user workflows from concept to demo.' },
+        { name: 'Python & PyQt6', details: 'Assembling desktop software interfaces and integrating JSON databases.' },
+        { name: 'Frontend Assembly', details: 'Creating static websites using modern styling frameworks and HTML/CSS.' },
       ]
     },
     creative: {
       icon: <Camera size={18} />,
       skills: [
         { name: 'Photography', details: 'Featured in 11th 35Awards, student photographer for MUN media.' },
-        { name: 'Visual Direction', details: 'Design planning, layout structures, and aesthetic design systems.' },
-        { name: 'Cinematography', details: 'Video capture, editing flow, and media storytelling.' },
+        { name: 'Visual Direction', details: 'Designing layout structures, video concepts, and premium visual themes.' },
+        { name: 'Cinematography', details: 'Video capture, editing flow, and cinematic visual storytelling.' },
       ]
     },
     leadership: {
       icon: <Sparkles size={18} />,
       skills: [
-        { name: 'Event Management', details: 'Organized and managed student conferences, MUN events.' },
+        { name: 'Product Management', details: 'Translating user requirements into features, organizing roadmaps, and leading design.' },
         { name: 'Media Operations', details: 'Media Committee Chairperson at SMSD MUN 2025.' },
-        { name: 'Financial Tracking', details: 'Interact Club Treasurer (2025-26), handled badge finances.' },
+        { name: 'Interact Club Treasurer', details: 'Treasurer for 2025-26, managing subscription fee collections and badge capital.' },
       ]
     }
   };
@@ -193,12 +193,9 @@ export default function Portfolio() {
       </div>
 
       {/* Floating Glassmorphic Navigation Bar */}
-      <nav className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300 w-[calc(100%-2rem)] max-w-2xl px-6 rounded-full border border-purple-500/10 bg-black/40 backdrop-blur-md shadow-[0_8px_32px_0_rgba(139,92,246,0.08)] flex justify-between items-center ${
+      <nav className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300 w-[calc(100%-2rem)] max-w-2xl px-6 rounded-full border border-purple-500/10 bg-black/40 backdrop-blur-md shadow-[0_8px_32px_0_rgba(139,92,246,0.08)] flex justify-center items-center ${
         scrolled ? 'top-3 py-2.5 max-w-xl border-purple-500/20 bg-black/60 shadow-[0_8px_32px_0_rgba(139,92,246,0.15)]' : 'top-6 py-4'
       }`}>
-        <a href="#top" className="text-purple-400 font-semibold hover:text-purple-300 transition-colors text-sm tracking-wide">
-          Devansh
-        </a>
         <div className="flex gap-4 md:gap-6 text-xs md:text-sm text-gray-300 font-medium">
           {['about', 'achievements', 'projects', 'gallery', 'skills', 'contact'].map((section) => (
             <a
