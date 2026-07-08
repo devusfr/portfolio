@@ -444,7 +444,7 @@ export default function Portfolio() {
             className="portfolio-contact-card bg-purple-900/20 border border-purple-900/40 rounded-lg p-6 hover:border-purple-500/50 transition group"
           >
             <p className="text-gray-400 mb-2">GitHub</p>
-            <p className="text-purple-300 group-hover:text-purple-200 transition">github.com/devvy69</p>
+            <p className="text-purple-300 group-hover:text-purple-200 transition">github.com/devusfr</p>
           </a>
           <a
             href="https://www.linkedin.com/in/devansh-dey-b482143b9/"
