@@ -73,8 +73,8 @@ export default function Portfolio() {
       skills: [
         { name: 'AI Prompt Engineering', details: 'Directing LLMs (Claude, Codex) to build full-stack web and desktop applications.' },
         { name: 'Product Prototyping', details: 'Designing system structures, UI layouts, and user workflows from concept to demo.' },
-        { name: 'Python & PyQt6', details: 'Assembling desktop software interfaces and integrating JSON databases.' },
-        { name: 'Frontend Assembly', details: 'Creating static websites using modern styling frameworks and HTML/CSS.' },
+        { name: 'Robotics Building', details: 'Assembling custom robot chassis, designing arm mechanisms, and system integration (IRC 2024 semi-finalist).' },
+        { name: 'Electronic Projects', details: 'Prototyping circuits, working with sensors, microcontrollers (Arduino), and hardware wiring.' },
       ]
     },
     creative: {
