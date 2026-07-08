@@ -422,24 +422,7 @@ export default function Portfolio() {
             ))}
           </div>
 
-          {/* Skills Grid */}
-          <div className="grid md:grid-cols-2 gap-6 min-h-[220px]">
-            {skillCategories[activeTab].skills.map((skill, idx) => (
-              <div 
-                key={idx}
-                className="bg-purple-900/10 border border-purple-900/30 rounded-xl p-6 hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(139,92,246,0.05)] relative overflow-hidden group"
-              >
-                <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-all duration-300"></div>
-                <h4 className="text-lg font-semibold text-purple-300 mb-2 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-                  {skill.name}
-                </h4>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  {skill.details}
-                </p>
-              </div>
-            ))}
-          </div>
+
         </div>
       </section>
 
