@@ -245,7 +245,7 @@ export default function Portfolio() {
                 I'm Devansh, an 18-year-old builder and visual storyteller based in West Bengal, India, focused on product, leadership, robotics, hardware, and media. I care about structure, precise planning, and strategic thinking.
               </p>
               <p className="text-gray-400 text-sm">
-                I'm highly interested in hardware and emerging technology, from semiconductor processing to how actual products are made. I enjoy PC builds, modded Raspberry Pi console devices, IoT projects, robotics, and audio engineering. I am looking forward to pursuing BBA (Hons.) to develop business, entrepreneurship, and analytics skills as a mainstream focus.
+                I'm highly interested in hardware and emerging technology, from semiconductor processing to how actual products are made. I enjoy PC builds, modded Raspberry Pi console devices, IoT projects, robotics, and audio engineering. I look forward to pursuing a BBA (Hons.) to develop business, entrepreneurship, and analytics skills as a mainstream focus.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
