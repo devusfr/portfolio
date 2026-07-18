@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ExternalLink, X, ChevronLeft, ChevronRight, Code, Camera, Sparkles } from 'lucide-react';
 import photoLamp from './assets/photo-lamp.webp';
 import photoFire from './assets/photo-fire.webp';
@@ -14,6 +14,8 @@ export default function Portfolio() {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [flippedCards, setFlippedCards] = useState({});
   const [visibleSections, setVisibleSections] = useState({});
+  const lightboxTriggerRef = useRef(null);
+  const lightboxCloseRef = useRef(null);
   const [stars] = useState(() => [...Array(100)].map((_, i) => ({
     id: i,
     width: Math.random() * 1.5 + 'px',
@@ -101,6 +103,7 @@ export default function Portfolio() {
 
   const toggleFlip = (id) => {
     setFlippedCards(prev => ({
+      ...prev,
       [id]: !prev[id]
     }));
   };
@@ -176,8 +179,12 @@ export default function Portfolio() {
       if (e.key === 'ArrowLeft') setLightboxIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxIndex]);
+    lightboxCloseRef.current?.focus();
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      lightboxTriggerRef.current?.focus();
+    };
+  }, [lightboxIndex === null]);
 
   return (
     <div className="portfolio-shell bg-black text-white min-h-screen font-sans relative">
@@ -201,7 +208,7 @@ export default function Portfolio() {
             <a
               key={section}
               href={`#${section}`}
-              className={`capitalize transition-colors relative py-1 hover:text-purple-400 ${
+              className={`capitalize transition-colors relative py-1 hover:text-purple-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 focus-visible:outline-offset-2 focus-visible:rounded ${
                 activeSection === section ? 'text-purple-300 font-bold' : ''
               }`}
             >
@@ -283,8 +290,18 @@ export default function Portfolio() {
               key={achievement.id}
               id={`achievement-${achievement.id}`}
               data-animate
-              className={`transition-all duration-1000 ${visibleSections[`achievement-${achievement.id}`] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+              role="button"
+              tabIndex={0}
+              aria-pressed={!!flippedCards[achievement.id]}
+              aria-label={`${cleanText(achievement.front)}, ${achievement.year}. Press to ${flippedCards[achievement.id] ? 'show summary' : 'show detail'}.`}
+              className={`transition-all duration-1000 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 focus-visible:outline-offset-4 rounded-xl ${visibleSections[`achievement-${achievement.id}`] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
               onClick={() => toggleFlip(achievement.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  toggleFlip(achievement.id);
+                }
+              }}
               style={{ perspective: '1000px' }}
             >
               <div
@@ -381,14 +398,28 @@ export default function Portfolio() {
         <div id="gallery-content" data-animate className={`transition-all duration-1000 ${visibleSections['gallery-content'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="portfolio-photo-grid">
             {photos.map((photo, idx) => (
-              <figure 
-                key={photo.id} 
-                className="portfolio-photo-item cursor-pointer group relative overflow-hidden rounded-xl border border-purple-900/40 hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.03]"
-                onClick={() => setLightboxIndex(idx)}
+              <figure
+                key={photo.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open photo: ${photo.title}`}
+                className="portfolio-photo-item cursor-pointer group relative overflow-hidden rounded-xl border border-purple-900/40 hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 focus-visible:outline-offset-2"
+                onClick={(e) => {
+                  lightboxTriggerRef.current = e.currentTarget;
+                  setLightboxIndex(idx);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    lightboxTriggerRef.current = e.currentTarget;
+                    setLightboxIndex(idx);
+                  }
+                }}
               >
                 <img
                   src={photo.url}
                   alt={photo.title}
+                  loading="lazy"
                   className="portfolio-photo-image transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
@@ -405,12 +436,16 @@ export default function Portfolio() {
         <h2 className="text-3xl font-semibold mb-12 text-white">Skills</h2>
         <div id="skills-content" data-animate className={`transition-all duration-1000 ${visibleSections['skills-content'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {/* Tabs */}
-          <div className="flex justify-center gap-4 mb-8">
+          <div className="flex justify-center gap-4 mb-8" role="tablist" aria-label="Skill categories">
             {Object.keys(skillCategories).map((category) => (
               <button
                 key={category}
+                role="tab"
+                aria-selected={activeTab === category}
+                aria-controls={`skills-panel-${category}`}
+                id={`skills-tab-${category}`}
                 onClick={() => setActiveTab(category)}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-full border transition-all duration-300 font-medium text-sm capitalize ${
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-full border transition-all duration-300 font-medium text-sm capitalize focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 focus-visible:outline-offset-2 ${
                   activeTab === category
                     ? 'bg-purple-900/60 border-purple-400 text-white shadow-[0_0_20px_rgba(139,92,246,0.35)] scale-105'
                     : 'bg-purple-950/20 border-purple-900/50 text-gray-300 hover:text-white hover:border-purple-500/50 hover:bg-purple-900/20'
@@ -422,7 +457,24 @@ export default function Portfolio() {
             ))}
           </div>
 
-
+          {/* Panel */}
+          <div
+            key={activeTab}
+            role="tabpanel"
+            id={`skills-panel-${activeTab}`}
+            aria-labelledby={`skills-tab-${activeTab}`}
+            className="grid md:grid-cols-2 gap-4 animate-fade-in"
+          >
+            {skillCategories[activeTab].skills.map((skill) => (
+              <div
+                key={skill.name}
+                className="bg-purple-900/10 border border-purple-900/30 rounded-lg p-5 text-left"
+              >
+                <p className="text-purple-300 font-semibold mb-1.5">{skill.name}</p>
+                <p className="text-gray-400 text-sm leading-relaxed">{skill.details}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -478,21 +530,27 @@ export default function Portfolio() {
 
       {/* Fullscreen Photography Lightbox */}
       {lightboxIndex !== null && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center backdrop-blur-sm animate-fade-in"
           onClick={() => setLightboxIndex(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Photo: ${photos[lightboxIndex].title}`}
         >
           {/* Close Button */}
-          <button 
-            className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors p-2 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20"
+          <button
+            ref={lightboxCloseRef}
+            aria-label="Close photo viewer"
+            className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors p-2 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 focus-visible:outline-offset-2"
             onClick={() => setLightboxIndex(null)}
           >
             <X size={28} />
           </button>
 
           {/* Left Arrow */}
-          <button 
-            className="absolute left-6 text-gray-400 hover:text-white transition-colors p-2.5 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20"
+          <button
+            aria-label="Previous photo"
+            className="absolute left-6 text-gray-400 hover:text-white transition-colors p-2.5 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 focus-visible:outline-offset-2"
             onClick={(e) => {
               e.stopPropagation();
               setLightboxIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
@@ -514,8 +572,9 @@ export default function Portfolio() {
           </div>
 
           {/* Right Arrow */}
-          <button 
-            className="absolute right-6 text-gray-400 hover:text-white transition-colors p-2.5 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20"
+          <button
+            aria-label="Next photo"
+            className="absolute right-6 text-gray-400 hover:text-white transition-colors p-2.5 bg-purple-950/20 hover:bg-purple-900/40 rounded-full border border-purple-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400 focus-visible:outline-offset-2"
             onClick={(e) => {
               e.stopPropagation();
               setLightboxIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
